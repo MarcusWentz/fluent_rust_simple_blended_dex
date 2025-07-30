@@ -43,8 +43,6 @@ contract SwapDexBlend {
         return priceTokenToEth;
     }
 
-    receive() external payable {}
-
     function addLiquidity(uint256 tokenAmount) external payable {
         require(tokenAmount > 0 && msg.value > 0, "Invalid amounts");
 
