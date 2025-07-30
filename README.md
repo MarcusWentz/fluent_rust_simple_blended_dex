@@ -56,8 +56,8 @@ Deploy the Solidity contract with the Rust contract address
 with the Forge flag which defines path to constructor input text file `--constructor-args-path`
 
 ```shell
-forge create src/FluentSdkRustTypesTest.sol:FluentSdkRustTypesTest \
---constructor-args-path src/deployConstructor/FluentSdkRustTypesTest.txt \
+forge create src/SwapDexBlend.sol:SwapDexBlend \
+--constructor-args-path src/deployConstructor/SwapDexBlend.txt \
 --private-key $devTestnetPrivateKey \
 --rpc-url https://rpc.testnet.fluent.xyz/ \
 --broadcast \

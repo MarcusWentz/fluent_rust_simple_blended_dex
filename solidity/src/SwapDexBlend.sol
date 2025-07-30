@@ -11,7 +11,7 @@ interface IERC20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-contract FluentSdkRustTypesTest {
+contract SwapDexBlend {
 
     IFluentRust public fluentRust;
     IERC20 public token;
