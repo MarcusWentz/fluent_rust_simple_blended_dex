@@ -3,6 +3,8 @@ pragma solidity 0.8.30;
 
 interface IFluentRust {
     function rustUint256() external view returns (uint256);    
+    function rustGetPriceEthToToken(uint256) external view returns (uint256);    
+    function rustGetPriceTokenToEth(uint256) external view returns (uint256);    
 }
 
 interface IERC20 {        
@@ -23,8 +25,7 @@ contract SwapDexBlend {
 
     constructor(address FluentRustAddress) {
         fluentRust = IFluentRust(FluentRustAddress);
-            token = IERC20(0x9030e7aa523b19D6A9d2327d45d3A3287b3EfAE1);
-
+        token = IERC20(0x9030e7aa523b19D6A9d2327d45d3A3287b3EfAE1);
     }
 
     function getRustUint256() external view returns (uint256) {
@@ -44,13 +45,15 @@ contract SwapDexBlend {
 
     function getPriceEthToToken(uint256 ethIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
+        // uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
+        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
         return priceEthToToken;
     }
 
     function getPriceTokenToEth(uint256 tokenIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
+        // uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
+        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
         return priceTokenToEth;
     }
 
