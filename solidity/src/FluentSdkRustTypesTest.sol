@@ -19,7 +19,7 @@ contract FluentSdkRustTypesTest {
     address public constant tokenAddress = 0x9030e7aa523b19D6A9d2327d45d3A3287b3EfAE1;
 
     uint256 public reserveToken;
-    uint256 public reserveNative;
+    uint256 public reserveEth;
 
     constructor(address FluentRustAddress) {
         fluentRust = IFluentRust(FluentRustAddress);
@@ -39,41 +39,43 @@ contract FluentSdkRustTypesTest {
 
         token.transferFrom(msg.sender, address(this), tokenAmount);
         reserveToken += tokenAmount;
-        reserveNative += msg.value;
+        reserveEth += msg.value;
     }
 
-    function getPriceNativeToToken(uint256 ethIn) public view returns (uint256) {
-        require(reserveNative > 0 && reserveToken > 0, "Empty pool");
-        return (ethIn * reserveToken) / reserveNative;
+    function getPriceEthToToken(uint256 ethIn) public view returns (uint256) {
+        require(reserveEth > 0 && reserveToken > 0, "Empty pool");
+        uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
+        return priceEthToToken;
     }
 
-    function getPriceTokenToNative(uint256 tokenIn) public view returns (uint256) {
-        require(reserveNative > 0 && reserveToken > 0, "Empty pool");
-        return (tokenIn * reserveNative) / reserveToken;
+    function getPriceTokenToEth(uint256 tokenIn) public view returns (uint256) {
+        require(reserveEth > 0 && reserveToken > 0, "Empty pool");
+        uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
+        return priceTokenToEth;
     }
 
-    function swapNativeToToken() external payable {
+    function swapEthToToken() external payable {
         require(msg.value > 0, "No ETH sent");
 
-        uint256 tokenOut = getPriceNativeToToken(msg.value);
+        uint256 tokenOut = getPriceEthToToken(msg.value);
         require(tokenOut <= reserveToken, "Not enough liquidity");
 
-        reserveNative += msg.value;
+        reserveEth += msg.value;
         reserveToken -= tokenOut;
 
         token.transfer(msg.sender, tokenOut);
     }
 
-    function swapTokenToNative(uint256 tokenIn) external {
+    function swapTokenToEth(uint256 tokenIn) external {
         require(tokenIn > 0, "Zero input");
 
-        uint256 ethOut = getPriceTokenToNative(tokenIn);
-        require(ethOut <= reserveNative, "Not enough liquidity");
+        uint256 ethOut = getPriceTokenToEth(tokenIn);
+        require(ethOut <= reserveEth, "Not enough liquidity");
 
         token.transferFrom(msg.sender, address(this), tokenIn);
 
         reserveToken += tokenIn;
-        reserveNative -= ethOut;
+        reserveEth -= ethOut;
 
         payable(msg.sender).transfer(ethOut);
     }
