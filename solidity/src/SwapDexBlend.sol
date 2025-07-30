@@ -3,8 +3,8 @@ pragma solidity 0.8.30;
 
 interface IFluentRust {
     function rustUint256() external view returns (uint256);    
-    function rustGetPriceEthToToken(uint256) external view returns (uint256);    
-    function rustGetPriceTokenToEth(uint256) external view returns (uint256);    
+    function rustGetPriceEthToToken(uint256,uint256,uint256) external view returns (uint256);    
+    function rustGetPriceTokenToEth(uint256,uint256,uint256) external view returns (uint256);    
 }
 
 interface IERC20 {        
@@ -34,12 +34,12 @@ contract SwapDexBlend {
     }
 
     function testRust1(uint256 ethIn) external view returns (uint256) {
-        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
+        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
         return priceEthToToken;
     }
 
     function testRust2(uint256 tokenIn) external view returns (uint256) {
-        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
+        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn,reserveEth,reserveToken);
         return priceTokenToEth;
     }
 
