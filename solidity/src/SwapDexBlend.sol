@@ -33,6 +33,16 @@ contract SwapDexBlend {
         return rustUint256;
     }
 
+    function testRust1(uint256 ethIn) external view returns (uint256) {
+        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
+        return priceEthToToken;
+    }
+
+    function testRust2(uint256 tokenIn) external view returns (uint256) {
+        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
+        return priceTokenToEth;
+    }
+
     receive() external payable {}
 
     function addLiquidity(uint256 tokenAmount) external payable {
@@ -45,15 +55,15 @@ contract SwapDexBlend {
 
     function getPriceEthToToken(uint256 ethIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        // uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
-        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
+        uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
+        // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
         return priceEthToToken;
     }
 
     function getPriceTokenToEth(uint256 tokenIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        // uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
-        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
+        uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
+        // uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
         return priceTokenToEth;
     }
 
