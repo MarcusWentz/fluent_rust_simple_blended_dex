@@ -64,20 +64,28 @@ contract SwapDexBlend is ISwapDexBlend{
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
         // Swap math:
         // https://rareskills.io/post/uniswap-v2-price-impact
-        uint256 constant_product = reserveEth * reserveToken;
-        uint256 delta_eth = reserveEth + ethIn;
-        uint256 tokenOut = reserveToken - ((constant_product) / delta_eth);
+        // k = (x+Δx)*(y-Δy) = (x_new)*(y_new)
+        uint256 constantProduct = reserveEth * reserveToken;
+        // ethIn = Δx
+        uint256 newReserveEth = reserveEth + ethIn;
+        uint256 newReserveToken = ((constantProduct) / newReserveEth);
+        // tokenOut = Δy
+        uint256 deltaToken = reserveToken - newReserveToken;
         // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
-        return tokenOut;
+        return deltaToken;
     }
 
     function getEthOut(uint256 tokenIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
         // Swap math:
         // https://rareskills.io/post/uniswap-v2-price-impact
-        uint256 constant_product = reserveEth * reserveToken;
-        uint256 delta_token = reserveToken + tokenIn;
-        uint256 ethOut = reserveEth - ((constant_product) / delta_token);
+        // k = (y+Δy)*(x-Δx) = (y_new)*(x_new)
+        uint256 constantProduct = reserveEth * reserveToken;
+        // tokenIn = Δy
+        uint256 newReserveToken = reserveToken + tokenIn; 
+        uint256 newReserveEth = ((constantProduct) / newReserveToken);
+        // ethOut = Δx
+        uint256 ethOut = reserveEth - newReserveEth;
         // uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
         return ethOut;
     }
