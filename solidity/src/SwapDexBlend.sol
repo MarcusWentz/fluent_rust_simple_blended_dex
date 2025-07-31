@@ -33,15 +33,17 @@ contract SwapDexBlend {
         return rustUint256;
     }
 
-    function testRust1(uint256 ethIn) external view returns (uint256) {
-        uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
-        return priceEthToToken;
-    }
+    // function testRust1(uint256 ethIn) external view returns (uint256) {
+    //     // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
+    //     uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,100,100);
+    //     return priceEthToToken;
+    // }
 
-    function testRust2(uint256 tokenIn) external view returns (uint256) {
-        uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn,reserveEth,reserveToken);
-        return priceTokenToEth;
-    }
+    // function testRust2(uint256 tokenIn) external view returns (uint256) {
+    //     uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn,100,100);
+    //     // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
+    //     return priceTokenToEth;
+    // }
 
     function addLiquidity(uint256 tokenAmount) external payable {
         require(tokenAmount > 0 && msg.value > 0, "Invalid amounts");
@@ -51,24 +53,32 @@ contract SwapDexBlend {
         reserveEth += msg.value;
     }
 
-    function getPriceEthToToken(uint256 ethIn) public view returns (uint256) {
+    function getTokenOut(uint256 ethIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        uint256 priceEthToToken = (ethIn * reserveToken) / reserveEth;
+        // Swap math:
+        // https://rareskills.io/post/uniswap-v2-price-impact
+        uint256 constant_product = reserveEth * reserveToken;
+        uint256 delta_eth = reserveEth + ethIn;
+        uint256 tokenOut = reserveToken - ((constant_product) / delta_eth);
         // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
-        return priceEthToToken;
+        return tokenOut;
     }
 
-    function getPriceTokenToEth(uint256 tokenIn) public view returns (uint256) {
+    function getEthOut(uint256 tokenIn) public view returns (uint256) {
         require(reserveEth > 0 && reserveToken > 0, "Empty pool");
-        uint256 priceTokenToEth = (tokenIn * reserveEth) / reserveToken;
+        // Swap math:
+        // https://rareskills.io/post/uniswap-v2-price-impact
+        uint256 constant_product = reserveEth * reserveToken;
+        uint256 delta_token = reserveToken + tokenIn;
+        uint256 ethOut = reserveEth - ((constant_product) / delta_token);
         // uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn);
-        return priceTokenToEth;
+        return ethOut;
     }
 
     function swapEthToToken() external payable {
         require(msg.value > 0, "No ETH sent");
 
-        uint256 tokenOut = getPriceEthToToken(msg.value);
+        uint256 tokenOut = getTokenOut(msg.value);
         require(tokenOut <= reserveToken, "Not enough liquidity");
 
         reserveEth += msg.value;
@@ -80,7 +90,7 @@ contract SwapDexBlend {
     function swapTokenToEth(uint256 tokenIn) external {
         require(tokenIn > 0, "Zero input");
 
-        uint256 ethOut = getPriceTokenToEth(tokenIn);
+        uint256 ethOut = getEthOut(tokenIn);
         require(ethOut <= reserveEth, "Not enough liquidity");
 
         token.transferFrom(msg.sender, address(this), tokenIn);
