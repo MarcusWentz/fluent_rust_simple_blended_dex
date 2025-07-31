@@ -3,8 +3,8 @@ pragma solidity 0.8.30;
 
 interface IFluentRust {
     function rustUint256() external view returns (uint256);    
-    function rustGetPriceEthToToken(uint256,uint256,uint256) external view returns (uint256);    
-    function rustGetPriceTokenToEth(uint256,uint256,uint256) external view returns (uint256);    
+    function rustGetTokenOut(uint256,uint256,uint256) external view returns (uint256);    
+    function rustGetEthOut(uint256,uint256,uint256) external view returns (uint256);    
 }
 
 interface IERC20 {        
@@ -40,17 +40,15 @@ contract SwapDexBlend is ISwapDexBlend{
         return rustUint256;
     }
 
-    // function testRust1(uint256 ethIn) external view returns (uint256) {
-    //     // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
-    //     uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,100,100);
-    //     return priceEthToToken;
-    // }
+    function testRustGetTokenOut(uint256 ethIn) external view returns (uint256) {
+        uint256 tokenOut = fluentRust.rustGetTokenOut(ethIn,reserveEth,reserveToken);
+        return tokenOut;
+    }
 
-    // function testRust2(uint256 tokenIn) external view returns (uint256) {
-    //     uint256 priceTokenToEth = fluentRust.rustGetPriceTokenToEth(tokenIn,100,100);
-    //     // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn,reserveEth,reserveToken);
-    //     return priceTokenToEth;
-    // }
+    function testRustGetEthOut(uint256 tokenIn) external view returns (uint256) {
+        uint256 ethOut = fluentRust.rustGetEthOut(tokenIn,reserveEth,reserveToken);
+        return ethOut;
+    }
 
     function addLiquidity(uint256 tokenAmount) external payable {
         require(tokenAmount > 0 && msg.value > 0, "Invalid amounts");

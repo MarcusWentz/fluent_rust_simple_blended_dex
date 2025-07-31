@@ -16,13 +16,13 @@ struct ROUTER<SDK> {
 pub trait RouterAPI {
     // Make sure type interfaces are defined here or else there will be a compiler error.
     fn rust_uint256(&self) -> U256;
-    fn rust_get_price_eth_to_token(
+    fn rust_get_token_out(
         &self,
         eth_in: U256,
         reserve_eth: U256,
         reserve_token: U256) 
     -> U256;
-    fn rust_get_price_token_to_eth(
+    fn rust_get_eth_out(
         &self,
         token_in: U256,
         reserve_eth: U256,
@@ -42,19 +42,19 @@ impl<SDK: SharedAPI> RouterAPI for ROUTER<SDK> {
         return uint256_test;
     }
 
-    #[function_id("rustGetPriceEthToToken(uint256,uint256,uint256)")]
-    fn rust_get_price_eth_to_token(
+    #[function_id("rustGetTokenOut(uint256,uint256,uint256)")]
+    fn rust_get_token_out(
         &self,  
         eth_in: U256,
         reserve_eth: U256,
         reserve_token: U256
         ) -> U256 {
-        let price_eth_to_token : U256 = (eth_in*reserve_token)/reserve_eth;
-        return price_eth_to_token;
+        let token_out : U256 = (eth_in*reserve_token)/reserve_eth;
+        return token_out;
     }
 
-    #[function_id("rustGetPriceTokenToEth(uint256,uint256,uint256)")]
-    fn rust_get_price_token_to_eth(
+    #[function_id("rustGetEthOut(uint256,uint256,uint256)")]
+    fn rust_get_eth_out(
         &self,  
         token_in: U256,
         reserve_eth: U256,
