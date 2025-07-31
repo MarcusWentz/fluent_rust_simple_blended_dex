@@ -68,9 +68,9 @@ contract SwapDexBlend is ISwapDexBlend{
         uint256 newReserveEth = reserveEth + ethIn;
         uint256 newReserveToken = ((constantProduct) / newReserveEth);
         // tokenOut = Δy
-        uint256 deltaToken = reserveToken - newReserveToken;
+        uint256 tokenOut = reserveToken - newReserveToken;
         // uint256 priceEthToToken = fluentRust.rustGetPriceEthToToken(ethIn);
-        return deltaToken;
+        return tokenOut;
     }
 
     function getEthOut(uint256 tokenIn) public view returns (uint256) {
