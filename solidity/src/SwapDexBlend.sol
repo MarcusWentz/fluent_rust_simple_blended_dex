@@ -13,7 +13,14 @@ interface IERC20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-contract SwapDexBlend {
+interface ISwapDexBlend{
+
+    //Custom errors.
+    error EtherNotSent();
+
+}
+
+contract SwapDexBlend is ISwapDexBlend{
 
     IFluentRust public fluentRust;
     IERC20 public token;
@@ -98,6 +105,7 @@ contract SwapDexBlend {
         reserveToken += tokenIn;
         reserveEth -= ethOut;
 
-        payable(msg.sender).transfer(ethOut);
+        (bool sentUser, ) = payable(msg.sender).call{value:ethOut}("");
+        if(sentUser == false) revert EtherNotSent(); 
     }
 }
