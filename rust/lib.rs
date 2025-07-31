@@ -49,7 +49,15 @@ impl<SDK: SharedAPI> RouterAPI for ROUTER<SDK> {
         reserve_eth: U256,
         reserve_token: U256
         ) -> U256 {
-        let token_out : U256 = (eth_in*reserve_token)/reserve_eth;
+        // Swap math:
+        // https://rareskills.io/post/uniswap-v2-price-impact
+        // k = (x+Δx)*(y-Δy) = (x_new)*(y_new)
+        let constant_product = reserve_eth * reserve_token;
+        // ethIn = Δx
+        let new_reserve_eth = reserve_eth + eth_in;
+        let new_reserve_token = constant_product / new_reserve_eth;
+        // tokenOut = Δy
+        let token_out : U256 = reserve_token - new_reserve_token;
         return token_out;
     }
 
@@ -60,8 +68,16 @@ impl<SDK: SharedAPI> RouterAPI for ROUTER<SDK> {
         reserve_eth: U256,
         reserve_token: U256
     ) -> U256 {
-        let price_token_to_eth : U256 = (token_in*reserve_eth)/reserve_token;
-        return price_token_to_eth;
+        // Swap math:
+        // https://rareskills.io/post/uniswap-v2-price-impact
+        // k = (y+Δy)*(x-Δx) = (y_new)*(x_new)
+        let constant_product = reserve_eth * reserve_token;
+        // tokenIn = Δy
+        let new_reserve_token = reserve_token + token_in; 
+        let new_reserve_eth = constant_product / new_reserve_token;
+        // ethOut = Δx
+        let eth_out = reserve_eth - new_reserve_eth;
+        return eth_out;
     }
 
 }
